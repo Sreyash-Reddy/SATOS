@@ -25,7 +25,7 @@ var rootCmd = &cobra.Command{
 	Short: "SATOS - Swarm Agentic Team Operating System",
 	Long:  `Director V0 - Manages AI agent teams with structured task execution`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(`
+		fmt.Print(`
 ╔══════════════════════════════════════════════════╗
 ║   SATOS Director V0                              ║
 ║   Swarm Agentic Team Operating System            ║
@@ -225,7 +225,6 @@ null
 
 func init() {
 	// Set default paths
-	home, _ := os.UserHomeDir()
 
 	rootCmd.PersistentFlags().StringVar(&baseDir, "dir", ".satos", "SATOS state directory")
 	rootCmd.PersistentFlags().StringVar(&dbPath, "db", ".satos/state.db", "Database path")

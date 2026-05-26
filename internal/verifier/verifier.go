@@ -74,51 +74,78 @@ func ParseTaskFile(content string) (*TaskFile, error) {
 
 	lines := strings.Split(content, "\n")
 	var currentSection string
-	var inCodeBlock bool
 
 	for _, line := range lines {
-		// Skip markdown headers for now
-		if strings.HasPrefix(line, "##") {
-			parts := strings.SplitN(strings.TrimSpace(line), " ", 2)
-			if len(parts) >= 2 {
-				currentSection = strings.ToLower(strings.TrimSpace(parts[1]))
-				continue
+		trimmed := strings.TrimSpace(line)
+
+		// Parse section header
+		if strings.HasPrefix(trimmed, "##") {
+			// Get section content after ##
+			sectionPart := strings.TrimPrefix(trimmed, "##")
+
+			// Check if value is on same line: ## Status: queued
+			if colonIdx := strings.Index(sectionPart, ":"); colonIdx > 0 {
+				sectionName := strings.TrimSpace(sectionPart[:colonIdx])
+				sectionValue := strings.TrimSpace(sectionPart[colonIdx+1:])
+				currentSection = strings.ToLower(sectionName)
+				// Set value if on same line
+				switch currentSection {
+				case "status":
+					tf.Status = sectionValue
+				case "output":
+					tf.Output = sectionValue
+				case "depends-on":
+					tf.DependsOn = sectionValue
+				case "sprint":
+					tf.Sprint = sectionValue
+				case "priority":
+					tf.Priority = sectionValue
+				case "assignee":
+					tf.Assignee = sectionValue
+				}
+			} else {
+				// No colon - just section name, value on next line
+				currentSection = strings.ToLower(strings.TrimSpace(sectionPart))
 			}
+			continue
 		}
 
 		// Track code blocks
-		if strings.HasPrefix(line, "```") {
-			inCodeBlock = !inCodeBlock
+		if strings.HasPrefix(trimmed, "```") {
 			continue
 		}
 
-		if inCodeBlock {
+		// Skip empty lines and non-section lines
+		if trimmed == "" || currentSection == "" {
+			continue
+		}
+
+		// Command and Verify are multi-line (code blocks)
+		// For now, collect lines between section headers
+		if currentSection == "command" {
+			tf.Command += trimmed + "\n"
+		} else if currentSection == "verify" {
+			tf.Verify += trimmed + "\n"
+		} else {
+			// Single value sections
 			switch currentSection {
-			case "command":
-				tf.Command += line + "\n"
-			case "verify":
-				tf.Verify += line + "\n"
+			case "status":
+				tf.Status = trimmed
+			case "output":
+				tf.Output = trimmed
+			case "depends-on":
+				tf.DependsOn = trimmed
+			case "sprint":
+				tf.Sprint = trimmed
+			case "priority":
+				tf.Priority = trimmed
+			case "assignee":
+				tf.Assignee = trimmed
 			}
-			continue
-		}
-
-		switch currentSection {
-		case "status":
-			tf.Status = strings.TrimSpace(line)
-		case "output":
-			tf.Output = strings.TrimSpace(line)
-		case "depends-on":
-			tf.DependsOn = strings.TrimSpace(line)
-		case "sprint":
-			tf.Sprint = strings.TrimSpace(line)
-		case "priority":
-			tf.Priority = strings.TrimSpace(line)
-		case "assignee":
-			tf.Assignee = strings.TrimSpace(line)
 		}
 	}
 
-	// Clean up command and verify (remove trailing newlines and leading/trailing whitespace)
+	// Clean up
 	tf.Command = strings.Trim(tf.Command, "\n ")
 	tf.Verify = strings.Trim(tf.Verify, "\n ")
 
