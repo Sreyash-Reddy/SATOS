@@ -1,6 +1,5 @@
-# SATOS State
-.satos/state.db
-.satos/*.log
+# SATOS State (per-project, never commit)
+.satos/
 
 # Environment
 .env

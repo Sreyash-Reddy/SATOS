@@ -44,15 +44,11 @@ Teams explore multiple solutions, debate trade-offs, and the TL picks the optima
 ## Directory Structure
 
 ```
-.satos/           # SATOS state (per-project)
 docs/             # Full documentation
-  satos.md        # Overview
-  architecture/   # System architecture
-  teams/          # Team descriptions
-  workflow/       # Workflow process
-  pr-standards/   # PR standards
-evidence/         # Video/image evidence
+evidence/         # Video/image evidence (optional)
 ```
+
+Detailed structure in [docs/](docs/satos.md).
 
 ## Documentation
 
