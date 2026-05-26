@@ -1,0 +1,24 @@
+# SATOS State
+.satos/state.db
+.satos/*.log
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Evidence (keep but ignore large videos)
+# evidence/*.webm
+# evidence/*.mp4
